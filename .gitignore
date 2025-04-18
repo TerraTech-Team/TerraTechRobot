@@ -1,0 +1,12 @@
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.idea/
+*.log
+*.DS_Store
+*.ncrunch*
+_ReSharper*/
