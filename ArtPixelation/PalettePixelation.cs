@@ -1,4 +1,6 @@
+using System.Numerics;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
 
@@ -15,22 +17,36 @@ public class PalettePixelation
         _resizer = new GridResizer(resampler);
     }
 
-    public Image<Rgba32> Apply(Image<Rgba32> original, int targetSize)
+    public PixelationResult Apply(Image<Rgba32> original, int targetSize)
     {
         var downscaled = _resizer.Resize(original, targetSize);
+        var usedColors = new HashSet<Rgba32>();
 
-        for (int y = 0; y < downscaled.Height; y++)
-        {
-            for (int x = 0; x < downscaled.Width; x++)
+        Parallel.For(0, downscaled.Height,
+            () => new HashSet<Rgba32>(),
+            (y, _, localSet) =>
             {
-                var originalColor = downscaled[x, y];
-                var nearestColor = FindNearestColor(originalColor);
-                downscaled[x, y] = nearestColor;
-            }
-        }
+                var row = downscaled.DangerousGetPixelRowMemory(y).Span;
+                for (int x = 0; x < downscaled.Width; x++)
+                {
+                    var nearest = FindNearestColor(row[x]);
+                    row[x] = nearest;
+                    localSet.Add(nearest);
+                }
+                return localSet;
+            },
+            localSet =>
+            {
+                lock (usedColors)
+                {
+                    foreach (var color in localSet)
+                        usedColors.Add(color);
+                }
+            });
 
-        return downscaled;
+        return new PixelationResult(downscaled, usedColors.ToList());
     }
+
 
     private Rgba32 FindNearestColor(Rgba32 color)
     {
@@ -50,11 +66,10 @@ public class PalettePixelation
         return nearest;
     }
 
-    private float GetColorDistance(Rgba32 c1, Rgba32 c2)
+    private static float GetColorDistance(Rgba32 c1, Rgba32 c2)
     {
-        int dr = c1.R - c2.R;
-        int dg = c1.G - c2.G;
-        int db = c1.B - c2.B;
-        return dr * dr + dg * dg + db * db;
+        var v1 = new Vector3(c1.R, c1.G, c1.B);
+        var v2 = new Vector3(c2.R, c2.G, c2.B);
+        return Vector3.DistanceSquared(v1, v2);
     }
 }
