@@ -19,12 +19,7 @@ public class GridResizer
         if (targetSize <= 0 || (targetSize & (targetSize - 1)) != 0)
             throw new ArgumentException("Размер должен быть положительной степенью двойки: 16, 32, 64 и т.д.", nameof(targetSize));
 
-        int squareSize = Math.Max(original.Width, original.Height);
-
-        var padded = new Image<Rgba32>(squareSize, squareSize, new Rgba32(0, 0, 0, 0));
-        int offsetX = (squareSize - original.Width) / 2;
-        int offsetY = (squareSize - original.Height) / 2;
-        padded.Mutate(ctx => ctx.DrawImage(original, new Point(offsetX, offsetY), 1f));
+        var padded = CreatePaddedSquareImage(original);
 
         return padded.Clone(ctx => ctx.Resize(new ResizeOptions
         {
@@ -32,5 +27,16 @@ public class GridResizer
             Sampler = _resampler,
             Mode = ResizeMode.Stretch
         }));
+    }
+
+    private Image<Rgba32> CreatePaddedSquareImage(Image<Rgba32> original)
+    {
+        int squareSize = Math.Max(original.Width, original.Height);
+        var padded = new Image<Rgba32>(squareSize, squareSize, new Rgba32(0, 0, 0, 0));
+        int offsetX = (squareSize - original.Width) / 2;
+        int offsetY = (squareSize - original.Height) / 2;
+
+        padded.Mutate(ctx => ctx.DrawImage(original, new Point(offsetX, offsetY), 1f));
+        return padded;
     }
 }
