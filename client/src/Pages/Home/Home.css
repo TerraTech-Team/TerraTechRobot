@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap');
+
+.home-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  background-color: #ffffff;
+  padding: 20px;
+}
+
+.robot-container {
+  background-color: white;
+  border-radius: 10px;
+  /*box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);*/
+  padding: 30px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+}
+
+.robot-title {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 64px;
+}
+
+.robot-description {
+  color: #4D4D4D;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 36px;
+}
+
+.upload-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Кнопка загрузки */
+
+.upload-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 238.45px;
+  height: 76.07px;
+  margin: 20px auto;
+  box-sizing: border-box;
+  background: rgba(224, 224, 224, 0.8);
+  border: 3px solid rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 28px;
+  color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-button:hover {
+  background-color: #00C2FF;
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+#image-upload {
+  display: none;
+}
+
+.image-preview {
+  margin: 30px 0;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.process-button {
+  padding: 12px 24px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.process-button:hover {
+  background-color: #27ae60;
+}
+
+.activation-notice {
+  margin-top: 40px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #e74c3c;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+.activation-notice p:first-child {
+  color: #e74c3c;
+  font-weight: bold;
+  margin-bottom: 5px;
+}

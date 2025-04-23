@@ -1,0 +1,250 @@
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    max-width: 100%;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+
+.settings-title {
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.5);
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 28px;
+    text-align: center;
+}
+
+.main-content {
+    display: flex;
+    width: 100%;
+
+    margin: 20px 0;
+}
+
+.size-input-container {
+    width: 100%;
+    max-width: 200px;
+    margin-bottom: 20px;
+}
+
+.input-label-size {
+    display: block;
+    width: 100%;
+    margin: 20px 0;
+    margin-left: -7px;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.5);
+    text-align: center;
+    left: 0;
+    right: 0;
+    transform: none;
+}
+
+.input-label {
+    display: block;
+    width: 100%;
+    margin-left: 100px;
+    margin-top: 50px;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.5);
+    text-align: center;
+    position: relative;
+    left: 0;
+    right: 0;
+    transform: none;
+}
+
+.size-input {
+    display: block;
+    width: 200px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-left: -15px;
+}
+
+.density-slider-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 350px;
+    margin-top: 40px;
+    margin-right: -100px;
+
+}
+
+.density-slider-vertical {
+    -webkit-appearance: slider-vertical;
+    width: 8px;
+    height: 100%;
+    transform: rotate(0deg);
+    writing-mode: bt-lr;
+}
+
+.density-value {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.green-field {
+    box-sizing: border-box;
+    width: 708px;
+    height: 530px;
+    background: #47D655;
+    border: 5px solid rgba(0, 0, 0, 0.5);
+    border-radius: 66px;
+    position: relative;
+    margin: 20px auto;
+    flex-shrink: 0;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.colors-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.color-label {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.5);
+    text-align: center;
+    display: block;
+    width: 100%;
+
+
+}
+
+.color-palette {
+    box-sizing: border-box;
+    width: 176.9px;
+    height: 530px;
+    background: #FFFCFC;
+    border: 5px solid rgba(0, 0, 0, 0.5);
+    border-radius: 66px;
+    position: relative;
+    padding: 20px 0;
+    margin-left: -120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.color-circle {
+    box-sizing: border-box;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 3px solid rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.color-circle:hover {
+    transform: scale(1.1);
+}
+
+/* Цвета кружков */
+.color-circle.red {
+    background: #DC143C;
+}
+
+.color-circle.orange {
+    background: #FF8C00;
+}
+
+.color-circle.gold {
+    background: #FFD700;
+}
+
+.color-circle.green {
+    background: #3CB371;
+}
+
+.color-circle.blue {
+    background: #6495ED;
+}
+
+.color-circle.purple {
+    background: #BA55D3;
+}
+
+.color-circle.white {
+    background: #F5F5F5;
+}
+
+.color-circle.black {
+    background: #1E1E1E;
+}
+
+.color-circle.pink {
+    background: #FFB6C1;
+}
+
+.color-circle.brown {
+    background: #8B4513;
+}
+
+
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 600px;
+    /* или нужная вам ширина */
+    margin-left: -40px;
+}
+
+.create-pixel-button,
+.delete-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 238.45px;
+    height: 76.07px;
+    box-sizing: border-box;
+    background: rgba(224, 224, 224, 0.8);
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 28px;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0;
+}
+
+.create-pixel-button:hover,
+.delete-button:hover {
+    background-color: #00C2FF;
+    color: #ffffff;
+    transform: scale(1.1);
+}
