@@ -4,7 +4,6 @@ obj/
 *.suo
 *.userosscache
 *.sln.docstates
-*.sln
 .vs/
 .idea/
 *.log
