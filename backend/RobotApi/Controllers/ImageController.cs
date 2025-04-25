@@ -78,7 +78,8 @@ public class ImageController : ControllerBase
         }
 
         var contentType = request.Image.ContentType.ToLowerInvariant();
-        if (!contentType.StartsWith("image/jpeg"))
+        var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp", "image/tiff", "image/pjpeg" };
+        if (!allowedTypes.Any(type => contentType.StartsWith(type)))
         {
             errorResult = UnsupportedMedia("Only image/jpeg is supported.");
             return false;
