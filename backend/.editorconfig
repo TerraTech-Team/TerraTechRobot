@@ -1,0 +1,62 @@
+# .editorconfig — стиль: camelCase без подчёркиваний для всех приватных полей
+
+root = true
+
+[*.cs]
+
+#########################################
+# Стиль camelCase без префиксов
+#########################################
+
+dotnet_naming_style.camel_case_style_no_prefix.capitalization = camel_case
+dotnet_naming_style.camel_case_style_no_prefix.required_prefix =
+dotnet_naming_style.camel_case_style_no_prefix.required_suffix =
+dotnet_naming_style.camel_case_style_no_prefix.word_separator =
+
+#########################################
+# Приватные поля (instance)
+#########################################
+
+dotnet_naming_rule.private_instance_fields_camel_case.severity = suggestion
+dotnet_naming_rule.private_instance_fields_camel_case.symbols = private_instance_fields
+dotnet_naming_rule.private_instance_fields_camel_case.style = camel_case_style_no_prefix
+
+dotnet_naming_symbols.private_instance_fields.applicable_kinds = field
+dotnet_naming_symbols.private_instance_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_instance_fields.required_modifiers = instance
+
+#########################################
+# Приватные static поля
+#########################################
+
+dotnet_naming_rule.private_static_fields_camel_case.severity = suggestion
+dotnet_naming_rule.private_static_fields_camel_case.symbols = private_static_fields
+dotnet_naming_rule.private_static_fields_camel_case.style = camel_case_style_no_prefix
+
+dotnet_naming_symbols.private_static_fields.applicable_kinds = field
+dotnet_naming_symbols.private_static_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_static_fields.required_modifiers = static
+
+#########################################
+# Приватные readonly поля
+#########################################
+
+dotnet_naming_rule.private_readonly_fields_camel_case.severity = suggestion
+dotnet_naming_rule.private_readonly_fields_camel_case.symbols = private_readonly_fields
+dotnet_naming_rule.private_readonly_fields_camel_case.style = camel_case_style_no_prefix
+
+dotnet_naming_symbols.private_readonly_fields.applicable_kinds = field
+dotnet_naming_symbols.private_readonly_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_readonly_fields.required_modifiers = readonly
+
+#########################################
+# Приватные static readonly поля
+#########################################
+
+dotnet_naming_rule.private_static_readonly_fields_camel_case.severity = suggestion
+dotnet_naming_rule.private_static_readonly_fields_camel_case.symbols = private_static_readonly_fields
+dotnet_naming_rule.private_static_readonly_fields_camel_case.style = camel_case_style_no_prefix
+
+dotnet_naming_symbols.private_static_readonly_fields.applicable_kinds = field
+dotnet_naming_symbols.private_static_readonly_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_static_readonly_fields.required_modifiers = static, readonly
