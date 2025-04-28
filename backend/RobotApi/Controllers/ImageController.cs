@@ -24,8 +24,6 @@ public class ImageController : ControllerBase
         new Rgba32(255, 182, 193),
         new Rgba32(139, 69, 19)
     ];
-
-    private const int ReturnImgSize = 512;
     
     [HttpPost("process")]
     [Consumes("multipart/form-data")]
@@ -38,11 +36,7 @@ public class ImageController : ControllerBase
         {
             await using var imageStream = request.Image.OpenReadStream();
             using var image = await Image.LoadAsync<Rgba32>(imageStream);
-            
             var result = PalettePixelation.Apply(defaultPalette, image, request.Quality);
-            
-            result.Image.Mutate(x => x.Resize(ReturnImgSize, ReturnImgSize, KnownResamplers.NearestNeighbor));
-            
             var outputStream = new MemoryStream();
             await result.Image.SaveAsPngAsync(outputStream);
             outputStream.Position = 0;
@@ -81,7 +75,7 @@ public class ImageController : ControllerBase
         var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp", "image/tiff", "image/pjpeg" };
         if (!allowedTypes.Any(type => contentType.StartsWith(type)))
         {
-            errorResult = UnsupportedMedia("Only image/jpeg is supported.");
+            errorResult = UnsupportedMedia("image/jpeg, image/png, image/webp, image/tiff, image/pjpeg");
             return false;
         }
 
