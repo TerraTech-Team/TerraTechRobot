@@ -106,8 +106,11 @@
     margin-top: 10px;
 }
 
-.green-field {
+.green-field-pix {
     box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 708px;
     height: 530px;
     background: #47D655;
@@ -118,6 +121,16 @@
     flex-shrink: 0;
     overflow: hidden;
     z-index: 1;
+}
+
+.green-field-pix img {
+    /*max-width: 400px;
+    max-height: 400px;
+    object-fit: contain;
+    display: block;*/
+    object-fit: contain;
+    image-rendering: pixelated;
+
 }
 
 .colors-container-pix {
@@ -247,7 +260,7 @@
     margin-left: -40px;
 }
 
-.create-pixel-button,
+.reprogress-pixel-button,
 .delete-button {
     display: flex;
     justify-content: center;
@@ -268,7 +281,7 @@
     margin: 0;
 }
 
-.create-pixel-button:hover,
+.reprogress-pixel-button:hover,
 .delete-button:hover {
     background-color: #00C2FF;
     color: #ffffff;

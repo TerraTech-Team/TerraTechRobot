@@ -1,22 +1,83 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './WithPix.css';
 
 const WithPix = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const { processedImageUrl, originalImageUrl, originalImageFile } = location.state || {};
+
     const [size, setSize] = useState();
-    const [density, setDensity] = useState(1);
+    const [density, setDensity] = useState(64);
     const [selectedColor, setSelectedColor] = useState('#4CAF50');
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    const colors = ['#4CAF50', '#2196F3', '#FFC107', '#F44336', '#9C27B0'];
+
     const DeleteButtonClick = () => {
         navigate('/WithoutImg');
-    }
-    const colors = ['#4CAF50', '#2196F3', '#FFC107', '#F44336', '#9C27B0'];
+    };
+
+    useEffect(() => {
+        return () => {
+            if (processedImageUrl) {
+                URL.revokeObjectURL(processedImageUrl);
+            }
+        };
+    }, [processedImageUrl]);
+
+
+    const handleReprocess = async () => {
+        if (!originalImageFile) return;
+
+        setIsProcessing(true);
+
+        try {
+            const formData = new FormData();
+            formData.append('image', originalImageFile);
+            formData.append('Quality', density.toString());
+
+            const response = await fetch("https://virtical-robot-5e99.twc1.net/api/image/process", {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`Ошибка сервера: ${response.status}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (contentType?.includes('image/')) {
+                const imageBlob = await response.blob();
+                const newProcessedImageUrl = URL.createObjectURL(imageBlob);
+                navigate('/WithPix', {
+                    state: {
+                        processedImageUrl: newProcessedImageUrl,
+                        originalImageUrl,
+                        originalImageFile,
+                        density
+                    },
+                    replace: true
+                });
+            }
+        } catch (error) {
+            console.error('Ошибка при повторной обработке:', error);
+            alert('Произошла ошибка при повторной обработке изображения');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
     return (
         <div className="settings-container">
-
-            <button className="download-button" >
+            <button
+                className="download-button"
+            >
                 Скачать программу
             </button>
+
             {/* Ввод размера */}
             <div className="size-input-container">
                 <label className="input-label-size">Размер</label>
@@ -39,8 +100,8 @@ const WithPix = () => {
                             value={density}
                             onChange={(e) => setDensity(e.target.value)}
                             className="density-slider-vertical"
-                            min="1"
-                            max="64"
+                            min="16"
+                            max="128"
                             step="1"
                             orient="vertical"
                         />
@@ -48,8 +109,25 @@ const WithPix = () => {
                     </div>
                 </div>
 
-                {/* Центральная часть - зеленое поле */}
-                <div className="green-field">
+                {/* Центральная часть - отображение обработанного изображения */}
+                <div className="green-field-pix">
+                    {processedImageUrl ? (
+                        <img
+                            src={processedImageUrl}
+                            alt="Обработанное изображение"
+                            onLoad={() => setImageLoaded(true)}
+                        />
+                    ) : (
+                        <div className="no-image-message">
+                            Обработанное изображение не найдено
+                        </div>
+                    )}
+                    {isProcessing && (
+                        <div className="processing-overlay">
+                            <div className="processing-spinner"></div>
+                            <p>Обработка...</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Правая часть - цвета */}
@@ -57,63 +135,33 @@ const WithPix = () => {
                     <div className="color-palette-pix">
                         <label className="color-label">Выбор цветов</label>
 
-                        <div className="color-row">
-                            <div className="color-circle red"></div>
-                            <div className="color-rectangle"></div>
-                        </div>
-
-                        <div className="color-row">
-                            <div className="color-circle orange"></div>
-                            <div className="color-rectangle"></div>
-                        </div>
-
-                        <div className="color-row">
-                            <div className="color-circle gold"></div>
-                            <div className="color-rectangle"></div>
-                        </div>
-
-                        <div className="color-row">
-                            <div className="color-circle green"></div>
-                            <div className="color-rectangle"></div>
-                        </div>
-
-                        <div className="color-row">
-                            <div className="color-circle blue"></div>
-                            <div className="color-rectangle"></div>
-                        </div>
-
-                        <div className="color-row">
-                            <div className="color-circle purple"></div>
-                            <div className="color-rectangle"></div>
-                        </div>
-
-                        <div className="color-row">
-                            <div className="color-circle white"></div>
-                            <div className="color-rectangle"></div>
-                        </div>
-
-                        <div className="color-row">
-                            <div className="color-circle black"></div>
-                            <div className="color-rectangle"></div>
-                        </div>
-
-                        <div className="color-row">
-                            <div className="color-circle pink"></div>
-                            <div className="color-rectangle"></div>
-                        </div>
-
-                        <div className="color-row">
-                            <div className="color-circle brown"></div>
-                            <div className="color-rectangle"></div>
-                        </div>
+                        {colors.map((color) => (
+                            <div key={color} className="color-row">
+                                <div
+                                    className="color-circle"
+                                    style={{ backgroundColor: color }}
+                                    onClick={() => setSelectedColor(color)}
+                                />
+                                <div className="color-rectangle"></div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
 
-
-            <div class="buttons-container">
-                <button class="create-pixel-button">Переделать</button>
-                <button class="delete-button" onClick={DeleteButtonClick}>Удалить</button>
+            <div className="buttons-container">
+                <button
+                    className="reprogress-pixel-button"
+                    onClick={handleReprocess}
+                >
+                    {isProcessing ? 'Обработка...' : 'Переделать'}
+                </button>
+                <button
+                    className="delete-button"
+                    onClick={DeleteButtonClick}
+                >
+                    Удалить
+                </button>
             </div>
         </div>
     );
