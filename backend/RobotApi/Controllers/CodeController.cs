@@ -43,9 +43,9 @@ public class CodeController : ControllerBase
             return false;
         }
 
-        if (request.Length == null)
+        if (request.Length == null || request.Width == null)
         {
-            errorResult = BadRequest("Invalid or missing 'square' parameter");
+            errorResult = BadRequest("Invalid or missing 'length' or 'width' parameter");
             return false;
         }
 
