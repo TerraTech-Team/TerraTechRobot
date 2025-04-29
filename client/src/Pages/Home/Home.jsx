@@ -6,7 +6,31 @@ const Home = () => {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    navigate('/WithImg'); // Переход на страницу с изображением
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = false;
+
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        if (!file.type.match('image.*')) {
+          alert('Пожалуйста, выберите файл изображения');
+          return;
+        }
+
+        const imageUrl = URL.createObjectURL(file);
+
+        navigate('/WithImg', {
+          state: {
+            imageUrl,
+            imageFile: file
+          }
+        });
+      }
+    };
+
+    input.click();
   };
 
   return (

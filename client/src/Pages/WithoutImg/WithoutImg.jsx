@@ -11,8 +11,26 @@ const WithoutImg = () => {
 
     const colors = ['#4CAF50', '#2196F3', '#FFC107', '#F44336', '#9C27B0'];
     const UploadButtonClick = () => {
-        navigate('/WithImg');
-    }
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const imageUrl = URL.createObjectURL(file);
+
+                navigate('/WithImg', {
+                    state: {
+                        imageUrl,
+                        imageFile: file
+                    }
+                });
+            }
+        };
+
+        input.click();
+    };
     return (
         <div className="settings-container">
 
@@ -39,8 +57,8 @@ const WithoutImg = () => {
                             value={density}
                             onChange={(e) => setDensity(e.target.value)}
                             className="density-slider-vertical"
-                            min="1"
-                            max="64"
+                            min="16"
+                            max="128"
                             step="1"
                             orient="vertical"
                         />
@@ -71,8 +89,8 @@ const WithoutImg = () => {
             </div>
 
 
-            <div class="buttons-container">
-                <button class="upload-img" onClick={UploadButtonClick}>Загрузить <br />изображение</button>
+            <div className="buttons-container">
+                <button className="upload-img" onClick={UploadButtonClick}>Загрузить <br />изображение</button>
             </div>
         </div>
     );
