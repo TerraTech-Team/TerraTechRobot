@@ -7,8 +7,8 @@ namespace RobotApi.Tests;
 
 public class ImageControllerTests
 {
-    private WebApplicationFactory<Program> factory = null!;
-    private HttpClient client = null!;
+    private WebApplicationFactory<Program> factory;
+    private HttpClient client;
 
     [SetUp]
     public void SetUp()
