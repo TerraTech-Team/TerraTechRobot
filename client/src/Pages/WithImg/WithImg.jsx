@@ -15,7 +15,8 @@ const WithImg = () => {
             </div>
         );
     }
-    const [size, setSize] = useState('');
+    const [length, setLength] = useState('');
+    const [width, setWidth] = useState('');
     const [density, setDensity] = useState(64);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -60,15 +61,28 @@ const WithImg = () => {
     return (
         <div className="settings-container">
             {/* Ввод размера */}
-            <div className="size-input-container">
-                <label className="input-label-size">Размер</label>
-                <input
-                    type="number"
-                    value={size}
-                    onChange={(e) => setSize(e.target.value)}
-                    className="size-input"
-                    min="1"
-                />
+            <div className="dimensions-container">
+                <div className="dimension-input">
+                    <label className="dimension-label">Длина</label>
+                    <input
+                        type="number"
+                        value={length}
+                        onChange={(e) => setLength(e.target.value)}
+                        className="size-input"
+                        min="1"
+                    />
+                </div>
+
+                <div className="dimension-input">
+                    <label className="dimension-label">Ширина</label>
+                    <input
+                        type="number"
+                        value={width}
+                        onChange={(e) => setWidth(e.target.value)}
+                        className="size-input"
+                        min="1"
+                    />
+                </div>
             </div>
 
             <div className="main-content">
