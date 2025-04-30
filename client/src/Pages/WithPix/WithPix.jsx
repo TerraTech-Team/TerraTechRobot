@@ -6,14 +6,16 @@ const WithPix = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { processedImageUrl, originalImageUrl, originalImageFile } = location.state || {};
+    const { processedImageUrl, originalImageUrl, originalImageFile, density: initialDensity } = location.state || {};
 
-    const [length, setLength] = useState('');
-    const [width, setWidth] = useState('');
-    const [density, setDensity] = useState(64);
+    const [length, setLength] = useState(10000);
+    const [width, setWidth] = useState(10000);
+    const [density, setDensity] = useState(initialDensity || 64);
     const [selectedColor, setSelectedColor] = useState('#4CAF50');
     const [imageLoaded, setImageLoaded] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [processedImageBlob, setProcessedImageBlob] = useState(null);
 
     const colors = ['#4CAF50', '#2196F3', '#FFC107', '#F44336', '#9C27B0'];
 
@@ -22,13 +24,19 @@ const WithPix = () => {
     };
 
     useEffect(() => {
+        if (processedImageUrl) {
+            fetch(processedImageUrl)
+                .then(res => res.blob())
+                .then(blob => setProcessedImageBlob(blob))
+                .catch(console.error);
+        }
+
         return () => {
             if (processedImageUrl) {
                 URL.revokeObjectURL(processedImageUrl);
             }
         };
     }, [processedImageUrl]);
-
 
     const handleReprocess = async () => {
         if (!originalImageFile) return;
@@ -53,6 +61,9 @@ const WithPix = () => {
             if (contentType?.includes('image/')) {
                 const imageBlob = await response.blob();
                 const newProcessedImageUrl = URL.createObjectURL(imageBlob);
+
+                setProcessedImageBlob(imageBlob);
+
                 navigate('/WithPix', {
                     state: {
                         processedImageUrl: newProcessedImageUrl,
@@ -64,19 +75,60 @@ const WithPix = () => {
                 });
             }
         } catch (error) {
-            console.error('Ошибка при повторной обработке:', error);
-            alert('Произошла ошибка при повторной обработке изображения');
+            console.error('Ошибка при обработке:', error);
+            alert('Ошибка обработки изображения');
         } finally {
             setIsProcessing(false);
         }
     };
 
+    const handleDownloadCode = async () => {
+        const blobToSend = processedImageBlob ||
+            (processedImageUrl ? await fetch(processedImageUrl).then(r => r.blob()) : null);
+
+        if (!blobToSend) {
+            alert('Пожалуйста, сначала обработайте изображение');
+            return;
+        }
+
+        setIsDownloading(true);
+        try {
+            const formData = new FormData();
+            formData.append('Image', blobToSend, 'image.png');
+            formData.append('Length', length.toString());
+            formData.append('Width', width.toString());
+
+            const response = await fetch("https://virtical-robot-5e99.twc1.net/api/code/generate", {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
+
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'robot_code.bin';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert(`Ошибка: ${error.message}`);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
     return (
         <div className="settings-container">
             <button
                 className="download-button"
+                onClick={handleDownloadCode}
+                disabled={isDownloading || !processedImageUrl}
             >
-                Скачать программу
+                {isDownloading ? 'Скачивание...' : 'Скачать программу'}
             </button>
 
             {/* Ввод размера */}
@@ -86,7 +138,7 @@ const WithPix = () => {
                     <input
                         type="number"
                         value={length}
-                        onChange={(e) => setLength(e.target.value)}
+                        onChange={(e) => setLength(Number(e.target.value))}
                         className="size-input"
                         min="1"
                     />
@@ -97,7 +149,7 @@ const WithPix = () => {
                     <input
                         type="number"
                         value={width}
-                        onChange={(e) => setWidth(e.target.value)}
+                        onChange={(e) => setWidth(Number(e.target.value))}
                         className="size-input"
                         min="1"
                     />
