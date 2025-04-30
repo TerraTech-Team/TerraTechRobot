@@ -124,13 +124,10 @@
 }
 
 .green-field-pix img {
-    /*max-width: 400px;
-    max-height: 400px;
-    object-fit: contain;
-    display: block;*/
+    min-width: 490px;
+    min-height: 490px;
     object-fit: contain;
     image-rendering: pixelated;
-
 }
 
 .colors-container-pix {
