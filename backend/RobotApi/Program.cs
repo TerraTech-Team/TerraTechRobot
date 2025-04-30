@@ -1,27 +1,35 @@
-var builder = WebApplication.CreateBuilder(args);
+namespace RobotApi;
 
-builder.Services.AddCors(options =>
+public class Program
 {
-    options.AddDefaultPolicy(corsPolicyBuilder =>
+    public static void Main(string[] args)
     {
-        corsPolicyBuilder
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(corsPolicyBuilder =>
+            {
+                corsPolicyBuilder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
 
-var app = builder.Build();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+        builder.Services.AddControllers();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+        var app = builder.Build();
 
-app.UseCors();
-app.UseHttpsRedirection();
-app.MapControllers();
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
-app.Run();
+        app.UseCors();
+        app.UseHttpsRedirection();
+        app.MapControllers();
+
+        app.Run();
+    }
+}
