@@ -5,7 +5,8 @@ import './WithoutImg.css';
 const WithoutImg = () => {
     const navigate = useNavigate();
 
-    const [size, setSize] = useState();
+    const [length, setLength] = useState('');
+    const [width, setWidth] = useState('');
     const [density, setDensity] = useState(1);
     const [selectedColor, setSelectedColor] = useState('#4CAF50');
 
@@ -36,15 +37,28 @@ const WithoutImg = () => {
 
 
             {/* Ввод размера */}
-            <div className="size-input-container">
-                <label className="input-label-size">Размер</label>
-                <input
-                    type="number"
-                    value={size}
-                    onChange={(e) => setSize(e.target.value)}
-                    className="size-input"
-                    min="1"
-                />
+            <div className="dimensions-container">
+                <div className="dimension-input">
+                    <label className="dimension-label">Длина</label>
+                    <input
+                        type="number"
+                        value={length}
+                        onChange={(e) => setLength(e.target.value)}
+                        className="size-input"
+                        min="1"
+                    />
+                </div>
+
+                <div className="dimension-input">
+                    <label className="dimension-label">Ширина</label>
+                    <input
+                        type="number"
+                        value={width}
+                        onChange={(e) => setWidth(e.target.value)}
+                        className="size-input"
+                        min="1"
+                    />
+                </div>
             </div>
 
             <div className="main-content">
