@@ -15,6 +15,7 @@ const WithImg = () => {
             </div>
         );
     }
+
     const [length, setLength] = useState('');
     const [width, setWidth] = useState('');
     const [density, setDensity] = useState(64);
@@ -27,7 +28,6 @@ const WithImg = () => {
 
         try {
             const formData = new FormData();
-
             formData.append('image', imageFile);
             formData.append('Quality', density.toString());
 
@@ -37,15 +37,22 @@ const WithImg = () => {
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || `Ошибка сервера: ${response.status}`);
+                throw new Error(`Ошибка сервера: ${response.status}`);
             }
 
 
             const blob = await response.blob();
-            const imageUrl = URL.createObjectURL(blob);
-            navigate('/WithPix', { state: { processedImageUrl: imageUrl } });
+            const imageDataUrl = URL.createObjectURL(blob);
 
+            navigate('/WithPix', {
+                state: {
+                    processedImageUrl: imageDataUrl,
+                    originalImageUrl: imageUrl,
+                    originalImageFile: imageFile,
+                    density,
+                    responseHeaders: Array.from(response.headers.entries())
+                }
+            });
 
         } catch (error) {
             console.error('Ошибка:', error);
@@ -57,7 +64,6 @@ const WithImg = () => {
     const DeleteButtonClick = () => {
         navigate('/WithoutImg');
     };
-
     return (
         <div className="settings-container">
             {/* Ввод размера */}
@@ -128,6 +134,7 @@ const WithImg = () => {
                     </div>
                 </div>
             </div>
+
             <div className="buttons-container">
                 <button
                     className="create-pixel-button"
