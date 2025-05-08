@@ -6,99 +6,139 @@ const WithPix = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { processedImageUrl, originalImageUrl, originalImageFile, density: initialDensity } = location.state || {};
+    const {
+        processedImageUrl,
+        originalImageUrl,
+        originalImageFile,
+        density: initialDensity,
+        responseHeaders,
+        colors: initialColors
+    } = location.state || {};
 
     const [length, setLength] = useState(10000);
     const [width, setWidth] = useState(10000);
     const [density, setDensity] = useState(initialDensity || 64);
-    const [selectedColor, setSelectedColor] = useState('#4CAF50');
-    const [imageLoaded, setImageLoaded] = useState(false);
+    const [selectedColor, setSelectedColor] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [processedImageBlob, setProcessedImageBlob] = useState(null);
+    const [serverColors, setServerColors] = useState(initialColors || []);
+    const [error, setError] = useState(null);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
-    const colors = ['#4CAF50', '#2196F3', '#FFC107', '#F44336', '#9C27B0'];
+
+    const parseColorsFromHeaders = (headers) => {
+        const colors = [];
+        const headersMap = new Map(headers);
+
+        for (let i = 1; i <= 10; i++) {
+            const headerName = `color-${i}`;
+            // Ищем заголовок в любом регистре
+            const foundHeader = Array.from(headersMap.entries())
+                .find(([key]) => key.toLowerCase() === headerName.toLowerCase());
+
+            if (foundHeader) {
+                const rgbValue = foundHeader[1];
+                colors.push({
+                    id: i,
+                    name: headerName,
+                    rgb: rgbValue.trim(),
+                    cssValue: `rgb(${rgbValue.trim()})`
+                });
+            }
+        }
+
+        return colors.sort((a, b) => a.id - b.id);
+    };
+    useEffect(() => {
+        console.log('Initial colors:', initialColors);
+        console.log('Response headers:', responseHeaders);
+
+        if (responseHeaders && responseHeaders.length > 0) {
+            const colors = parseColorsFromHeaders(responseHeaders);
+            console.log('Parsed colors:', colors);
+            setServerColors(colors);
+        } else if (initialColors) {
+            setServerColors(initialColors);
+        }
+    }, [responseHeaders, initialColors]);
 
     const DeleteButtonClick = () => {
         navigate('/WithoutImg');
     };
 
-    useEffect(() => {
-        if (processedImageUrl) {
-            fetch(processedImageUrl)
-                .then(res => res.blob())
-                .then(blob => setProcessedImageBlob(blob))
-                .catch(console.error);
-        }
-
-        return () => {
-            if (processedImageUrl) {
-                URL.revokeObjectURL(processedImageUrl);
-            }
-        };
-    }, [processedImageUrl]);
 
     const handleReprocess = async () => {
         if (!originalImageFile) return;
 
         setIsProcessing(true);
+        setError(null);
 
         try {
             const formData = new FormData();
             formData.append('image', originalImageFile);
             formData.append('Quality', density.toString());
 
-            const response = await fetch("https://virtical-robot-5e99.twc1.net/api/image/process", {
+            const response = await fetch("https://virtical-robot-5e99.twc1.net/api/image/process ", {
                 method: 'POST',
-                body: formData
+                body: formData,
+                mode: 'cors'
             });
 
             if (!response.ok) {
                 throw new Error(`Ошибка сервера: ${response.status}`);
             }
 
+            const colors = parseColorsFromHeaders(response.headers);
+            console.log('Полученные цвета:', colors);
+
             const contentType = response.headers.get('content-type');
             if (contentType?.includes('image/')) {
                 const imageBlob = await response.blob();
                 const newProcessedImageUrl = URL.createObjectURL(imageBlob);
-
                 setProcessedImageBlob(imageBlob);
+                setServerColors(colors);
+                setImageLoaded(false);
 
                 navigate('/WithPix', {
                     state: {
                         processedImageUrl: newProcessedImageUrl,
                         originalImageUrl,
                         originalImageFile,
-                        density
+                        density,
+                        colors
                     },
                     replace: true
                 });
             }
         } catch (error) {
             console.error('Ошибка при обработке:', error);
-            alert('Ошибка обработки изображения');
+            setError(`Ошибка обработки изображения: ${error.message}`);
         } finally {
             setIsProcessing(false);
         }
     };
 
+    // Скачивание кода
     const handleDownloadCode = async () => {
         const blobToSend = processedImageBlob ||
             (processedImageUrl ? await fetch(processedImageUrl).then(r => r.blob()) : null);
 
         if (!blobToSend) {
-            alert('Пожалуйста, сначала обработайте изображение');
+            setError('Пожалуйста, сначала обработайте изображение');
             return;
         }
 
         setIsDownloading(true);
+        setError(null);
+
         try {
             const formData = new FormData();
             formData.append('Image', blobToSend, 'image.png');
             formData.append('Length', length.toString());
             formData.append('Width', width.toString());
 
-            const response = await fetch("https://virtical-robot-5e99.twc1.net/api/code/generate", {
+            const response = await fetch("https://virtical-robot-5e99.twc1.net/api/code/generate ", {
                 method: 'POST',
                 body: formData
             });
@@ -107,6 +147,7 @@ const WithPix = () => {
 
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
+
             const a = document.createElement('a');
             a.href = url;
             a.download = 'robot_code.bin';
@@ -116,13 +157,15 @@ const WithPix = () => {
             setTimeout(() => URL.revokeObjectURL(url), 100);
         } catch (error) {
             console.error('Ошибка:', error);
-            alert(`Ошибка: ${error.message}`);
+            setError(`Ошибка скачивания: ${error.message}`);
         } finally {
             setIsDownloading(false);
         }
     };
+
     return (
         <div className="settings-container">
+            {/* Кнопка скачивания */}
             <button
                 className="download-button"
                 onClick={handleDownloadCode}
@@ -131,7 +174,15 @@ const WithPix = () => {
                 {isDownloading ? 'Скачивание...' : 'Скачать программу'}
             </button>
 
-            {/* Ввод размера */}
+            {/* Сообщение об ошибке */}
+            {error && (
+                <div className="error-message">
+                    {error}
+                    <button onClick={() => setError(null)}>Закрыть</button>
+                </div>
+            )}
+
+            {/* Поля длины и ширины */}
             <div className="dimensions-container">
                 <div className="dimension-input">
                     <label className="dimension-label">Длина</label>
@@ -143,7 +194,6 @@ const WithPix = () => {
                         min="1"
                     />
                 </div>
-
                 <div className="dimension-input">
                     <label className="dimension-label">Ширина</label>
                     <input
@@ -157,7 +207,7 @@ const WithPix = () => {
             </div>
 
             <div className="main-content">
-                {/* Левая часть - слайдер плотности */}
+                {/* Ползунок плотности */}
                 <div className="density-slider-container">
                     <label className="input-label">Плотность <br />посева</label>
                     <div className="slider-wrapper">
@@ -175,50 +225,59 @@ const WithPix = () => {
                     </div>
                 </div>
 
-                {/* Центральная часть - отображение обработанного изображения */}
+                {/* Блок с изображением */}
                 <div className="green-field-pix">
                     {processedImageUrl ? (
                         <img
                             src={processedImageUrl}
                             alt="Обработанное изображение"
                             onLoad={() => setImageLoaded(true)}
+                            style={{ display: imageLoaded ? 'block' : 'none' }}
                         />
                     ) : (
                         <div className="no-image-message">
                             Обработанное изображение не найдено
                         </div>
                     )}
-                    {isProcessing && (
-                        <div className="processing-overlay">
-                            <div className="processing-spinner"></div>
-                            <p>Обработка...</p>
-                        </div>
+                    {!imageLoaded && processedImageUrl && (
+                        <div className="image-loading">Загрузка изображения...</div>
                     )}
+
                 </div>
 
-                {/* Правая часть - цвета */}
+                {/* Палитра цветов */}
                 <div className="colors-container-pix">
                     <div className="color-palette-pix">
-                        <label className="color-label">Выбор цветов</label>
-
-                        {colors.map((color) => (
-                            <div key={color} className="color-row">
-                                <div
-                                    className="color-circle"
-                                    style={{ backgroundColor: color }}
-                                    onClick={() => setSelectedColor(color)}
-                                />
-                                <div className="color-rectangle"></div>
+                        <label className="color-label">Цвета изображения</label>
+                        {serverColors.length > 0 ? (
+                            <div className="color-grid">
+                                {serverColors.map((color) => (
+                                    <div
+                                        key={color.id}
+                                        className={`color-item ${selectedColor === color.rgb ? 'selected' : ''}`}
+                                        onClick={() => setSelectedColor(color.rgb)}
+                                        style={{ backgroundColor: `rgb(${color.rgb})` }}
+                                        title={`RGB: ${color.rgb}`}
+                                    >
+                                        <span className="color-rgb">{color.rgb}</span>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
+                        ) : (
+                            <div className="no-colors-message">
+                                Цвета не загружены
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
+            {/* Кнопки управления */}
             <div className="buttons-container">
                 <button
                     className="reprogress-pixel-button"
                     onClick={handleReprocess}
+                    disabled={isProcessing}
                 >
                     {isProcessing ? 'Обработка...' : 'Переделать'}
                 </button>
