@@ -248,7 +248,7 @@ const WithPix = () => {
                 {/* Палитра цветов */}
                 <div className="colors-container-pix">
                     <div className="color-palette-pix">
-                        <label className="color-label">Цвета изображения</label>
+                        <label className="color-label">Цвета <br />изображения</label>
                         {serverColors.length > 0 ? (
                             <div className="color-grid">
                                 {serverColors.map((color) => (
@@ -259,7 +259,7 @@ const WithPix = () => {
                                         style={{ backgroundColor: `rgb(${color.rgb})` }}
                                         title={`RGB: ${color.rgb}`}
                                     >
-                                        <span className="color-rgb">{color.rgb}</span>
+
                                     </div>
                                 ))}
                             </div>
