@@ -9,16 +9,26 @@ const WithoutImg = () => {
     const [width, setWidth] = useState('');
     const [density, setDensity] = useState(1);
     const [selectedColor, setSelectedColor] = useState('#4CAF50');
-
+    const [serverError, setServerError] = useState(null);
     const colors = ['#4CAF50', '#2196F3', '#FFC107', '#F44336', '#9C27B0'];
+
     const UploadButtonClick = () => {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
+        input.multiple = false;
 
         input.onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
+                if (!file.type.match('image.*')) {
+                    setServerError({
+                        code: 415,
+                        message: "Неподдерживаемый тип файла. "
+                    });
+                    return;
+                }
+
                 const imageUrl = URL.createObjectURL(file);
 
                 navigate('/WithImg', {
@@ -26,6 +36,7 @@ const WithoutImg = () => {
                         imageUrl,
                         imageFile: file
                     }
+
                 });
             }
         };
@@ -34,7 +45,23 @@ const WithoutImg = () => {
     };
     return (
         <div className="settings-container">
-
+            {/* Блок для отображения ошибок сервера */}
+            {serverError && (
+                <div className="server-error-message">
+                    <div className="error-header">
+                        Ошибка {serverError.code}
+                        <button
+                            className="error-close-button"
+                            onClick={() => setServerError(null)}
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div className="error-body">
+                        {serverError.message}
+                    </div>
+                </div>
+            )}
 
             {/* Ввод размера */}
             <div className="dimensions-container">
