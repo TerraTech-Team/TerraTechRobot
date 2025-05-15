@@ -288,7 +288,7 @@ const WithPix = () => {
                             style={{ display: imageLoaded ? 'block' : 'none' }}
                         />
                     ) : (
-                        <div className="no-image-message">
+                        <div className="no-message">
                             Обработанное изображение не найдено
                         </div>
                     )}
@@ -304,20 +304,37 @@ const WithPix = () => {
                         <label className="color-label">Цвета <br />изображения</label>
                         {serverColors.length > 0 ? (
                             <div className="color-grid">
-                                {serverColors.map((color) => (
-                                    <div
-                                        key={color.id}
-                                        className={`color-item ${selectedColor === color.rgb ? 'selected' : ''}`}
-                                        onClick={() => setSelectedColor(color.rgb)}
-                                        style={{ backgroundColor: `rgb(${color.rgb})` }}
-                                        title={`RGB: ${color.rgb}`}
-                                    >
+                                {serverColors.map((color) => {
+                                    const rgbToHex = (rgb) => {
+                                        if (!rgb) return '';
+                                        const parts = rgb.split(',').map(part => parseInt(part.trim()));
+                                        if (parts.length !== 3) return '';
 
-                                    </div>
-                                ))}
+                                        const toHex = (num) => {
+                                            const hex = num.toString(16);
+                                            return hex.length === 1 ? '0' + hex : hex;
+                                        };
+
+                                        return `#${toHex(parts[0])}${toHex(parts[1])}${toHex(parts[2])}`.toUpperCase();
+                                    };
+
+                                    const hexColor = rgbToHex(color.rgb);
+
+                                    return (
+                                        <div
+                                            key={color.id}
+                                            className={`color-item ${selectedColor === color.rgb ? 'selected' : ''}`}
+                                            style={{ backgroundColor: `rgb(${color.rgb})` }}
+                                        >
+                                            <span className="color-tooltip">
+                                                {color.name.replace('color-', 'Цвет ')}: {hexColor}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         ) : (
-                            <div className="no-colors-message">
+                            <div className="no-message">
                                 Цвета не загружены
                             </div>
                         )}
