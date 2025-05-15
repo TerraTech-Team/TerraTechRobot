@@ -12,7 +12,6 @@
 .robot-container {
   background-color: white;
   border-radius: 10px;
-  /*box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);*/
   padding: 30px;
   max-width: 1000px;
   width: 100%;
@@ -117,4 +116,31 @@
   color: #e74c3c;
   font-weight: bold;
   margin-bottom: 5px;
+}
+
+.error-message {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px 15px;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './WithImg.css';
 
@@ -6,12 +6,23 @@ const WithImg = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { imageUrl, imageFile } = location.state || {};
+    useEffect(() => {
+        const handleBackButton = () => {
+            navigate('/');
+        };
+
+        window.addEventListener('popstate', handleBackButton);
+
+        return () => {
+            window.removeEventListener('popstate', handleBackButton);
+        };
+    }, [navigate]);
 
     if (!imageUrl || !imageFile) {
         return (
             <div className="error-message">
-                <p>Изображение не загружено или произошла ошибка</p>
-                <button onClick={() => navigate('/')}>Вернуться на главную</button>
+                <p className="no-upload">Изображение не загружено</p>
+                <button className="back" onClick={() => navigate('/')}>Вернуться на главную</button>
             </div>
         );
     }
@@ -21,11 +32,12 @@ const WithImg = () => {
     const [density, setDensity] = useState(64);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [serverError, setServerError] = useState(null);
 
     const handleButtonClick = async () => {
         setIsLoading(true);
         setError(null);
-
+        setServerError(null);
         try {
             const formData = new FormData();
             formData.append('image', imageFile);
@@ -37,9 +49,37 @@ const WithImg = () => {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка сервера: ${response.status}`);
+                if (response.status === 415) {
+                    setServerError({
+                        code: 415,
+                        message: "Неподдерживаемый тип файла."
+                    });
+                } else if (response.status === 400) {
+                    setServerError({
+                        code: 400,
+                        message: "Неверный запрос. Пожалуйста, проверьте отправляемые данные."
+                    });
+                } else if (response.status === 500) {
+                    setServerError({
+                        code: 500,
+                        message: "Внутренняя ошибка сервера. Пожалуйста, попробуйте позже."
+                    });
+                } else {
+                    try {
+                        const errorData = await response.json();
+                        setServerError({
+                            code: response.status,
+                            message: errorData.message || `Ошибка ${response.status}`
+                        });
+                    } catch {
+                        setServerError({
+                            code: response.status,
+                            message: `Произошла ошибка (код ${response.status})`
+                        });
+                    }
+                }
+                return;
             }
-
 
             const blob = await response.blob();
             const imageDataUrl = URL.createObjectURL(blob);
@@ -61,12 +101,40 @@ const WithImg = () => {
             setIsLoading(false);
         }
     };
+
     const DeleteButtonClick = () => {
         navigate('/WithoutImg');
     };
+
     return (
         <div className="settings-container">
-            {/* Ввод размера */}
+            {/* Блок для отображения ошибок сервера */}
+            {serverError && (
+                <div className="server-error-message">
+                    <div className="error-header">
+                        Ошибка {serverError.code}
+                        <button
+                            className="error-close-button"
+                            onClick={() => setServerError(null)}
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div className="error-body">
+                        {serverError.message}
+                    </div>
+                </div>
+            )}
+
+            {/* Блок для других ошибок */}
+            {error && (
+                <div className="error-message">
+                    <p>{error}</p>
+                    <button onClick={() => setError(null)}>Закрыть</button>
+                </div>
+            )}
+
+            {/* Остальной код остается без изменений */}
             <div className="dimensions-container">
                 <div className="dimension-input">
                     <label className="dimension-label">Длина</label>
@@ -117,7 +185,6 @@ const WithImg = () => {
                     />
                 </div>
 
-                {/* Правая часть - цвета */}
                 <div className="colors-container">
                     <div className="color-palette">
                         <label className="color-label">Доступные <br />цвета</label>
@@ -146,6 +213,7 @@ const WithImg = () => {
                 <button className="delete-button" onClick={DeleteButtonClick}>
                     Удалить
                 </button>
+
             </div>
         </div>
     );

@@ -25,6 +25,7 @@ const WithPix = () => {
     const [serverColors, setServerColors] = useState(initialColors || []);
     const [error, setError] = useState(null);
     const [imageLoaded, setImageLoaded] = useState(false);
+    const [serverError, setServerError] = useState(null);
 
 
     const parseColorsFromHeaders = (headers) => {
@@ -33,7 +34,6 @@ const WithPix = () => {
 
         for (let i = 1; i <= 10; i++) {
             const headerName = `color-${i}`;
-            // Ищем заголовок в любом регистре
             const foundHeader = Array.from(headersMap.entries())
                 .find(([key]) => key.toLowerCase() === headerName.toLowerCase());
 
@@ -86,9 +86,37 @@ const WithPix = () => {
             });
 
             if (!response.ok) {
-                throw new Error(`Ошибка сервера: ${response.status}`);
+                if (response.status === 415) {
+                    setServerError({
+                        code: 415,
+                        message: "Неподдерживаемый тип файла."
+                    });
+                } else if (response.status === 400) {
+                    setServerError({
+                        code: 400,
+                        message: "Неверный запрос. Пожалуйста, проверьте отправляемые данные."
+                    });
+                } else if (response.status === 500) {
+                    setServerError({
+                        code: 500,
+                        message: "Внутренняя ошибка сервера. Пожалуйста, попробуйте позже."
+                    });
+                } else {
+                    try {
+                        const errorData = await response.json();
+                        setServerError({
+                            code: response.status,
+                            message: errorData.message || `Ошибка ${response.status}`
+                        });
+                    } catch {
+                        setServerError({
+                            code: response.status,
+                            message: `Произошла ошибка (код ${response.status})`
+                        });
+                    }
+                }
+                return;
             }
-
             const colors = parseColorsFromHeaders(response.headers);
             console.log('Полученные цвета:', colors);
 
@@ -119,7 +147,6 @@ const WithPix = () => {
         }
     };
 
-    // Скачивание кода
     const handleDownloadCode = async () => {
         const blobToSend = processedImageBlob ||
             (processedImageUrl ? await fetch(processedImageUrl).then(r => r.blob()) : null);
@@ -165,6 +192,32 @@ const WithPix = () => {
 
     return (
         <div className="settings-container">
+            {/* Блок для отображения ошибок сервера */}
+            {serverError && (
+                <div className="server-error-message">
+                    <div className="error-header">
+                        Ошибка {serverError.code}
+                        <button
+                            className="error-close-button"
+                            onClick={() => setServerError(null)}
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <div className="error-body">
+                        {serverError.message}
+                    </div>
+                </div>
+            )}
+
+            {/* Блок для других ошибок */}
+            {error && (
+                <div className="error-message">
+                    <p>{error}</p>
+                    <button onClick={() => setError(null)}>Закрыть</button>
+                </div>
+            )}
+
             {/* Кнопка скачивания */}
             <button
                 className="download-button"
