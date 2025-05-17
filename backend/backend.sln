@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotApi", "RobotApi\RobotA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotApi.Tests", "RobotApi.Tests\RobotApi.Tests.csproj", "{14351828-4128-4106-8E97-A0D594D67539}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotControl", "RobotControl\RobotControl.csproj", "{A5C32A22-AAA0-4598-A9AC-026C18193D87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{14351828-4128-4106-8E97-A0D594D67539}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14351828-4128-4106-8E97-A0D594D67539}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14351828-4128-4106-8E97-A0D594D67539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5C32A22-AAA0-4598-A9AC-026C18193D87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5C32A22-AAA0-4598-A9AC-026C18193D87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5C32A22-AAA0-4598-A9AC-026C18193D87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5C32A22-AAA0-4598-A9AC-026C18193D87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
