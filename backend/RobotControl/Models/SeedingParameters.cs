@@ -10,7 +10,8 @@ public class SeedingParameters
     public int PixelsX { get; set; }
     public int PixelsY { get; set; }
 
-    public Dictionary<Rgba32, (int ContainerId, string Name)> ColorToSeedContainerMap { get; set; } = new();
+    public Dictionary<Rgba32, int> ColorToContainerMap { get; set; } = new();
 
-    public float PixelStepCm => AreaWidthCm / PixelsX;
+    public float StepX => AreaWidthCm / PixelsX;
+    public float StepY => AreaHeightCm / PixelsY;
 }

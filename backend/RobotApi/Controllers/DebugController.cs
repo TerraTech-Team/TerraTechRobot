@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using RobotApi.Models;
-using RobotControl.Execution;
+using RobotControl;
 using RobotControl.Models;
-using RobotControl.Planning;
+using RobotControl.Core;
+using RobotControl.Hardware;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -33,28 +34,48 @@ public class DebugController : ControllerBase
                 AreaHeightCm = request.Length!.Value,
                 PixelsX = image.Width,
                 PixelsY = image.Height,
-                ColorToSeedContainerMap = GetPaletteMap()
+                ColorToContainerMap = GetPaletteMap()
             };
 
-            var planner = new BasicPlanner();
-            var commands = planner.Plan(image, parameters);
+            // Создаём виртуальные концевики
+            var xMin = new LimitSwitch("X_MIN");
+            var xMax = new LimitSwitch("X_MAX");
+            var yMin = new LimitSwitch("Y_MIN");
+            var yMax = new LimitSwitch("Y_MAX");
 
-            var context = new RobotContext(
-                new MovementController("X"),
-                new MovementController("Y"),
-                new MovementController("Z"),
-                new SeederController());
+            // Создаём моторы
+            var motorX = new StepperMotor("X");
+            var motorY = new StepperMotor("Y");
+
+            // Плоскость
+            var plane = new Plane(motorX, motorY, xMin, xMax, yMin, yMax);
+
+            // Z-мотор и серво-приводы
+            var motorZ = new StepperMotor("Z");
+            var gateServo = new Servo("GateServo");
+            var wheelServo = new Servo("WheelServo");
+
+            // Посевной модуль
+            var seedingUnit = new SeedingUnit(gateServo, wheelServo, motorZ);
+
+            // Робот
+            var robot = new Robot(seedingUnit, plane);
+
+            // Планировщик
+            var planner = new SeedingPlanner();
+            var actions = planner.Plan(robot, image, parameters);
 
             Console.WriteLine("==== Выполнение команд ====");
-            foreach (var cmd in commands)
+
+            foreach (var action in actions)
             {
-                cmd.Execute(context);
+                action.Invoke(); // Выполняем действия (движение/посев)
             }
 
             return Ok(new
             {
-                Message = "План построен и команды выполнены (в консоли).",
-                TotalCommands = commands.Count()
+                Message = "План построен и действия выполнены (в консоли).",
+                TotalActions = actions.Count
             });
         }
         catch (Exception ex)
@@ -93,18 +114,19 @@ public class DebugController : ControllerBase
         return true;
     }
 
-    private static Dictionary<Rgba32, (int, string)> GetPaletteMap() => new()
+    private static Dictionary<Rgba32, int> GetPaletteMap() => new()
     {
-        [new Rgba32(220, 20, 60)] = (0, "Crimson"),
-        [new Rgba32(255, 140, 0)] = (1, "DarkOrange"),
-        [new Rgba32(255, 215, 0)] = (2, "Gold"),
-        [new Rgba32(60, 179, 113)] = (3, "MediumSeaGreen"),
-        [new Rgba32(100, 149, 237)] = (4, "CornflowerBlue"),
-        [new Rgba32(186, 85, 211)] = (5, "MediumOrchid"),
-        [new Rgba32(245, 245, 245)] = (6, "WhiteSmoke"),
-        [new Rgba32(30, 30, 30)] = (7, "DarkGray"),
-        [new Rgba32(255, 182, 193)] = (8, "LightPink"),
-        [new Rgba32(139, 69, 19)] = (9, "SaddleBrown")
+        [new Rgba32(220, 20, 60)] = 0,
+        [new Rgba32(255, 140, 0)] = 1,
+        [new Rgba32(255, 215, 0)] = 2,
+        [new Rgba32(60, 179, 113)] = 3,
+        [new Rgba32(100, 149, 237)] = 4,
+        [new Rgba32(186, 85, 211)] = 5,
+        [new Rgba32(245, 245, 245)] = 6,
+        [new Rgba32(30, 30, 30)] = 7,
+        [new Rgba32(255, 182, 193)] = 8,
+        [new Rgba32(139, 69, 19)] = 9
     };
 }
+
 
