@@ -8,6 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="nanoFramework.Hardware.Esp32" Version="1.6.34" />
+      <PackageReference Include="nanoFramework.System.Device.Gpio" Version="1.1.57" />
+      <PackageReference Include="nanoFramework.System.Device.Pwm" Version="1.1.23" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.7" />
     </ItemGroup>
 

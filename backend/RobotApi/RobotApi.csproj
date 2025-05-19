@@ -15,7 +15,5 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ArtPixelation\ArtPixelation.csproj" />
-      <ProjectReference Include="..\RobotControl\RobotControl.csproj" />
     </ItemGroup>
-
 </Project>

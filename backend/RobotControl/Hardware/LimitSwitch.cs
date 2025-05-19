@@ -3,49 +3,23 @@ namespace RobotControl.Hardware;
 public class LimitSwitch
 {
     public string Name { get; }
-    private bool Triggered;
-    private readonly List<ILimitSwitchObserver> Observers = new();
 
-    public LimitSwitch(string name)
-    {
-        Name = name;
-    }
-
+    private bool triggered;
     public bool IsTriggered
     {
-        get => Triggered;
+        get => triggered;
         set
         {
-            if (Triggered != value)
+            if (triggered != value)
             {
-                Triggered = value;
-
-                if (Triggered)
-                {
-                    NotifyObservers();
-                }
+                triggered = value;
+                Console.WriteLine($"[{Name}] Switch {(value ? "TRIGGERED" : "RELEASED")}");
             }
         }
     }
 
-    public void AddObserver(ILimitSwitchObserver observer)
+    public LimitSwitch(string name)
     {
-        if (!Observers.Contains(observer))
-        {
-            Observers.Add(observer);
-        }
-    }
-
-    public void RemoveObserver(ILimitSwitchObserver observer)
-    {
-        Observers.Remove(observer);
-    }
-
-    private void NotifyObservers()
-    {
-        foreach (var observer in Observers)
-        {
-            observer.OnLimitSwitchTriggered(this);
-        }
+        Name = name;
     }
 }

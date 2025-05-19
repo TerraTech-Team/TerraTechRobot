@@ -13,9 +13,4 @@ public class Servo
     {
         Console.WriteLine($"[{Name}] Rotate to position {position}");
     }
-
-    public void Open()
-    {
-        Console.WriteLine($"[{Name}] Open gate");
-    }
 }

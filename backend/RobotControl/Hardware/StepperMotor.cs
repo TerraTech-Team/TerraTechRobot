@@ -18,7 +18,10 @@ public class StepperMotor
 
     public void Home(LimitSwitch endSwitch)
     {
-        
+        while (!endSwitch.IsTriggered)
+        {
+            Move(Direction.Backward, 1);
+        }
         Console.WriteLine($"[{AxisName}] Homing until switch {endSwitch.Name} is triggered");
     }
 }

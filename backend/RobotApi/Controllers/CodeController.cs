@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RobotApi.Models;
+using RobotApi.Services;
+using System.IO.Compression;
 
 namespace RobotApi.Controllers;
 
@@ -7,7 +9,16 @@ namespace RobotApi.Controllers;
 [Route("api/code")]
 public class CodeController : ControllerBase
 {
-    private const string BinaryCodePath = "Resourses/robot_code.bin";
+    private readonly SeedingPreparationService prepService;
+    private readonly NanoCodeInjectionService injectionService;
+    private readonly string backendRootPath;
+
+    public CodeController(IWebHostEnvironment env)
+    {
+        prepService = new SeedingPreparationService();
+        injectionService = new NanoCodeInjectionService();
+        backendRootPath = Path.Combine(env.ContentRootPath, "..");
+    }
 
     [HttpPost("generate")]
     [Consumes("multipart/form-data")]
@@ -16,15 +27,35 @@ public class CodeController : ControllerBase
         if (!IsRequestValid(request, out var errorResult))
             return errorResult;
 
-        var binBytes = await System.IO.File.ReadAllBytesAsync(BinaryCodePath);
         try
         {
+            await using var originalStream = request.Image!.OpenReadStream();
+            using var memoryStream = new MemoryStream();
+            await originalStream.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
 
-            return File(binBytes, "application/octet-stream", "robot_code.bin");
+            var parameters = new SeedingParameters
+            {
+                AreaWidthCm = request.Width!.Value,
+                AreaHeightCm = request.Length!.Value
+            };
+            var (preparedParams, colorMap) = await prepService.PrepareAsync(memoryStream, parameters);
+
+            var generationRoot = Path.GetFullPath(Path.Combine(backendRootPath, "CodeGeneration"));
+            injectionService.GenerateFirmwareDataFile(colorMap, preparedParams, generationRoot);
+
+            var zipFilePath = Path.Combine(Path.GetTempPath(), $"CodeGeneration_{Guid.NewGuid()}.zip");
+            if (System.IO.File.Exists(zipFilePath))
+                System.IO.File.Delete(zipFilePath);
+
+            ZipFile.CreateFromDirectory(generationRoot, zipFilePath);
+
+            var zipBytes = await System.IO.File.ReadAllBytesAsync(zipFilePath);
+            return File(zipBytes, "application/zip", "CodeGeneration.zip");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return InternalError("An error occurred while generating the robot code");
+            return InternalError("An error occurred while generating the project zip: " + ex.Message);
         }
     }
 
@@ -43,7 +74,7 @@ public class CodeController : ControllerBase
             return false;
         }
 
-        if (request.Length == null || request.Width == null)
+        if (request.Length == null || request.Width == null || request.Length <= 0 || request.Width <= 0)
         {
             errorResult = BadRequest("Invalid or missing 'length' or 'width' parameter");
             return false;
@@ -89,3 +120,4 @@ public class CodeController : ControllerBase
         StatusCode = 500
     };
 }
+
