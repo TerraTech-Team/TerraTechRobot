@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <PropertyGroup>
+    <!--The folder where the custom task will be present. It points to inside the NuGet package. -->
+    <_nanoFrameworkMSBuildTasks_TaskFolder>$(MSBuildThisFileDirectory)..\..\tasks\net472</_nanoFrameworkMSBuildTasks_TaskFolder>
+    
+    <!--Reference to the assembly which contains the MSBuild Task-->
+    <CustomTasksAssembly>$(_nanoFrameworkMSBuildTasks_TaskFolder)\nanoFramework.MSBuildTasks.dll</CustomTasksAssembly>
+  </PropertyGroup>
+  
+  <UsingTask TaskName="GenerateResx" AssemblyFile="$(CustomTasksAssembly)" />
+
+  <PropertyGroup>
+    <GeneratedResxFileName>Resources.resx</GeneratedResxFileName>
+  </PropertyGroup>
+
+</Project>
