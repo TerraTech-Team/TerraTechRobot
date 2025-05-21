@@ -18,14 +18,13 @@ const WithImg = () => {
         };
     }, [navigate]);
 
-    if (!imageUrl || !imageFile) {
-        return (
-            <div className="error-message">
-                <p className="no-upload">Изображение не загружено</p>
-                <button className="back" onClick={() => navigate('/')}>Вернуться на главную</button>
-            </div>
-        );
-    }
+    useEffect(() => {
+        if (!imageUrl || !imageFile) {
+            const back =
+                navigate('/', { replace: true });
+            return () => clearTimeout(back);
+        }
+    }, [imageUrl, imageFile, navigate]);
 
     const [length, setLength] = useState('');
     const [width, setWidth] = useState('');
@@ -134,7 +133,6 @@ const WithImg = () => {
                 </div>
             )}
 
-            {/* Остальной код остается без изменений */}
             <div className="dimensions-container">
                 <div className="dimension-input">
                     <label className="dimension-label">Длина</label>
@@ -188,16 +186,16 @@ const WithImg = () => {
                 <div className="colors-container">
                     <div className="color-palette">
                         <label className="color-label">Доступные <br />цвета</label>
-                        <div className="color-circle red"></div>
-                        <div className="color-circle orange"></div>
-                        <div className="color-circle gold"></div>
-                        <div className="color-circle green"></div>
-                        <div className="color-circle blue"></div>
-                        <div className="color-circle purple"></div>
-                        <div className="color-circle white"></div>
-                        <div className="color-circle black"></div>
-                        <div className="color-circle pink"></div>
-                        <div className="color-circle brown"></div>
+                        <div className="color-circle red" title="Красный (DC143C)"></div>
+                        <div className="color-circle orange" title="Оранжевый (FF8C00)"></div>
+                        <div className="color-circle gold" title="Золотой (FFD700)"></div>
+                        <div className="color-circle green" title="Зеленый (3CB371)"></div>
+                        <div className="color-circle blue" title="Голубой (6495ED)"></div>
+                        <div className="color-circle purple" title="Фиолетовый (BA55D3)"></div>
+                        <div className="color-circle white" title="Белый (F5F5F5)"></div>
+                        <div className="color-circle black" title="Черный (1E1E1E)"></div>
+                        <div className="color-circle pink" title="Розовый (FFB6C1)"></div>
+                        <div className="color-circle brown" title="Коричневый (8B4513)"></div>
                     </div>
                 </div>
             </div>
