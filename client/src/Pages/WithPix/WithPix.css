@@ -301,3 +301,81 @@
     text-align: center;
     padding: 20px;
 }
+
+@media (min-width: 768px) {
+
+    .green-field-pix {
+        order: 2;
+        flex: 1 1 400px;
+        max-width: 500px;
+        margin: 0 20px;
+    }
+
+}
+
+@media (min-width: 1024px) {
+
+    .green-field-pix {
+        flex: 1 1 600px;
+        max-width: 600px;
+    }
+
+    .reprogress-pixel-button,
+    .delete-button {
+        width: 238px;
+        height: 76px;
+        font-size: 24px;
+        line-height: 28px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .green-field-pix {
+        flex: 1 1 600px;
+        max-width: 350px;
+        max-height: 400px;
+    }
+
+    .green-field-pix img {
+        min-width: 200px;
+        min-height: 250px;
+    }
+
+
+    .reprogress-pixel-button,
+    .delete-button,
+    .download-button {
+        width: 160px;
+        height: 50px;
+        font-size: 16px;
+        line-height: 20px;
+    }
+
+    .download-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        box-sizing: border-box;
+        position: fixed !important;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        top: auto;
+        right: auto;
+        width: 90%;
+        max-width: 238px;
+        margin: 0 auto;
+        z-index: 100;
+    }
+
+    .download-button:hover {
+        transform: translateX(-50%) scale(1.1);
+    }
+
+    .settings-container {
+        padding-bottom: 100px;
+    }
+}

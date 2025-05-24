@@ -79,7 +79,7 @@ const WithPix = () => {
             formData.append('image', originalImageFile);
             formData.append('Quality', density.toString());
 
-            const response = await fetch("https://virtical-robot-5e99.twc1.net/api/image/process ", {
+            const response = await fetch("http://localhost:5266/api/image/process", {
                 method: 'POST',
                 body: formData,
                 mode: 'cors'
@@ -165,7 +165,7 @@ const WithPix = () => {
             formData.append('Length', length.toString());
             formData.append('Width', width.toString());
 
-            const response = await fetch("https://virtical-robot-5e99.twc1.net/api/code/generate ", {
+            const response = await fetch("http://localhost:5266/api/code/generate", {
                 method: 'POST',
                 body: formData
             });
@@ -261,20 +261,20 @@ const WithPix = () => {
 
             <div className="main-content">
                 {/* Ползунок плотности */}
-                <div className="density-slider-container">
-                    <label className="input-label">Плотность <br />посева</label>
-                    <div className="slider-wrapper">
+                <div className="density-slider-container-img">
+                    <label className="input-label-img">Плотность <br />посева</label>
+                    <div className="slider-wrapper-img">
                         <input
                             type="range"
                             value={density}
                             onChange={(e) => setDensity(e.target.value)}
-                            className="density-slider-vertical"
+                            className="density-slider-vertical-img"
                             min="16"
                             max="128"
                             step="1"
-                            orient="vertical"
+
                         />
-                        <span className="density-value">{density}</span>
+                        <span className="density-value-img">{density}</span>
                     </div>
                 </div>
 
@@ -299,8 +299,8 @@ const WithPix = () => {
                 </div>
 
                 {/* Палитра цветов */}
-                <div className="colors-container-pix">
-                    <div className="color-palette-pix">
+                <div className="colors-container-img">
+                    <div className="color-palette-img">
                         <label className="color-label">Цвета <br />изображения</label>
                         {serverColors.length > 0 ? (
                             <div className="color-grid">
@@ -343,7 +343,7 @@ const WithPix = () => {
             </div>
 
             {/* Кнопки управления */}
-            <div className="buttons-container">
+            <div className="buttons-container-img">
                 <button
                     className="reprogress-pixel-button"
                     onClick={handleReprocess}

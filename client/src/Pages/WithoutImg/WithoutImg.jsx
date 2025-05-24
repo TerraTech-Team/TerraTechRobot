@@ -90,20 +90,20 @@ const WithoutImg = () => {
 
             <div className="main-content">
                 {/* Левая часть - слайдер плотности */}
-                <div className="density-slider-container">
-                    <label className="input-label">Плотность <br />посева</label>
-                    <div className="slider-wrapper">
+                <div className="density-slider-container-img">
+                    <label className="input-label-img">Плотность <br />посева</label>
+                    <div className="slider-wrapper-img">
                         <input
                             type="range"
                             value={density}
                             onChange={(e) => setDensity(e.target.value)}
-                            className="density-slider-vertical"
+                            className="density-slider-vertical-img"
                             min="16"
                             max="128"
                             step="1"
-                            orient="vertical"
+
                         />
-                        <span className="density-value">{density}</span>
+                        <span className="density-value-img">{density}</span>
                     </div>
                 </div>
 
@@ -112,8 +112,8 @@ const WithoutImg = () => {
                 </div>
 
                 {/* Правая часть - цвета */}
-                <div className="colors-container">
-                    <div className="color-palette">
+                <div className="colors-container-img">
+                    <div className="color-palette-img">
                         <label className="color-label">Доступные <br />цвета</label>
                         <div className="color-circle red" title="Красный (DC143C)"></div>
                         <div className="color-circle orange" title="Оранжевый (FF8C00)"></div>
@@ -131,7 +131,7 @@ const WithoutImg = () => {
 
 
             <div className="buttons-container">
-                <button className="upload-img" onClick={UploadButtonClick}>Загрузить <br />изображение</button>
+                <button className="upload-imgout" onClick={UploadButtonClick}>Загрузить <br />изображение</button>
             </div>
         </div>
     );

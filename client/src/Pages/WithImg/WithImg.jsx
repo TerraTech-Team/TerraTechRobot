@@ -6,6 +6,7 @@ const WithImg = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { imageUrl, imageFile } = location.state || {};
+
     useEffect(() => {
         const handleBackButton = () => {
             navigate('/');
@@ -20,8 +21,7 @@ const WithImg = () => {
 
     useEffect(() => {
         if (!imageUrl || !imageFile) {
-            const back =
-                navigate('/', { replace: true });
+            const back = navigate('/', { replace: true });
             return () => clearTimeout(back);
         }
     }, [imageUrl, imageFile, navigate]);
@@ -42,7 +42,7 @@ const WithImg = () => {
             formData.append('image', imageFile);
             formData.append('Quality', density.toString());
 
-            const response = await fetch("https://virtical-robot-5e99.twc1.net/api/image/process", {
+            const response = await fetch("http://localhost:5266/api/image/process", {
                 method: 'POST',
                 body: formData
             });
@@ -107,7 +107,6 @@ const WithImg = () => {
 
     return (
         <div className="settings-container">
-            {/* Блок для отображения ошибок сервера */}
             {serverError && (
                 <div className="server-error-message">
                     <div className="error-header">
@@ -125,7 +124,6 @@ const WithImg = () => {
                 </div>
             )}
 
-            {/* Блок для других ошибок */}
             {error && (
                 <div className="error-message">
                     <p>{error}</p>
@@ -158,20 +156,19 @@ const WithImg = () => {
             </div>
 
             <div className="main-content">
-                <div className="density-slider-container">
-                    <label className="input-label">Плотность <br />посева</label>
-                    <div className="slider-wrapper">
+                <div className="density-slider-container-img">
+                    <label className="input-label-img">Плотность <br />посева</label>
+                    <div className="slider-wrapper-img">
                         <input
                             type="range"
                             value={density}
                             onChange={(e) => setDensity(e.target.value)}
-                            className="density-slider-vertical"
+                            className="density-slider-vertical-img"
                             min="16"
                             max="128"
                             step="1"
-                            orient="vertical"
                         />
-                        <span className="density-value">{density}</span>
+                        <span className="density-value-img">{density}</span>
                     </div>
                 </div>
 
@@ -183,8 +180,8 @@ const WithImg = () => {
                     />
                 </div>
 
-                <div className="colors-container">
-                    <div className="color-palette">
+                <div className="colors-container-img">
+                    <div className="color-palette-img">
                         <label className="color-label">Доступные <br />цвета</label>
                         <div className="color-circle red" title="Красный (DC143C)"></div>
                         <div className="color-circle orange" title="Оранжевый (FF8C00)"></div>
@@ -200,7 +197,7 @@ const WithImg = () => {
                 </div>
             </div>
 
-            <div className="buttons-container">
+            <div className="buttons-container-img">
                 <button
                     className="create-pixel-button"
                     onClick={handleButtonClick}
@@ -208,10 +205,9 @@ const WithImg = () => {
                 >
                     {isLoading ? 'Обработка...' : 'Создать пиксель-арт'}
                 </button>
-                <button className="delete-button" onClick={DeleteButtonClick}>
+                <button className="delete-button-img" onClick={DeleteButtonClick}>
                     Удалить
                 </button>
-
             </div>
         </div>
     );
