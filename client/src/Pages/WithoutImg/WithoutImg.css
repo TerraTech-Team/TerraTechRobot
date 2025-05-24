@@ -207,9 +207,10 @@
     margin-left: -40px;
 }
 
-.upload-img {
+.upload-imgout {
     display: block;
     margin: 0 auto;
+
     width: 238.45px;
     height: 76.07px;
     text-align: center;
@@ -225,7 +226,7 @@
     transition: all 0.3s ease;
 }
 
-.upload-img:hover {
+.upload-imgout:hover {
     background-color: #00C2FF;
     color: #ffffff;
     transform: scale(1.1);
@@ -257,4 +258,10 @@
 
 .no-upload {
     font-size: 36px;
+}
+
+@media (max-width: 480px) {
+    .upload-imgout {
+        margin-right: 50px;
+    }
 }
