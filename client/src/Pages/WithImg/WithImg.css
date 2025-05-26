@@ -54,10 +54,13 @@
 .density-slider-container-img {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
+    /* Изменено с center на flex-end */
     margin: 20px 0;
     order: 1;
     width: 100%;
+    padding-right: 30px;
+    /* Добавлен отступ справа */
 }
 
 .slider-wrapper-img {
@@ -66,6 +69,8 @@
     align-items: center;
     height: 200px;
     margin: 10px 0;
+    margin-right: 20px;
+    /* Добавлен отступ справа */
 }
 
 .density-slider-vertical-img {
@@ -73,6 +78,8 @@
     width: 8px;
     height: 100%;
     writing-mode: bt-lr;
+    margin-right: 10px;
+    /* Добавлен отступ справа */
 }
 
 .density-value-img {
@@ -80,6 +87,8 @@
     font-family: 'Roboto Condensed', sans-serif;
     font-weight: bold;
     margin-top: 10px;
+    margin-right: 20px;
+    /* Добавлен отступ справа */
 }
 
 .input-label-img {
@@ -441,12 +450,12 @@
         max-width: 600px;
     }
 
-    colors-container-img {
+    /*colors-container-img {
         flex: 0 0 180px;
         margin-top: 25px;
         display: flex;
         justify-content: center;
-    }
+    }*/
 
     .color-palette-img {
         min-height: 530px;
@@ -497,6 +506,51 @@
 }
 
 @media (max-width: 480px) {
+    .input-label-img {
+        font-family: 'Roboto Condensed', sans-serif;
+        font-weight: 700;
+        /* Возвращаем нормальный вес шрифта */
+        font-size: 16px;
+        /* Увеличиваем размер шрифта для лучшей читаемости */
+        line-height: 18px;
+        color: rgba(0, 0, 0, 0.5);
+        text-align: center;
+        margin-bottom: 10px;
+        margin-top: 10px;
+        margin-left: 0;
+        /* Убираем отрицательный отступ */
+        width: 100%;
+        /* Занимает всю ширину */
+        display: flex;
+        justify-content: center;
+        /* Центрируем текст */
+    }
+
+    .slider-wrapper-img {
+        height: 120px;
+        margin: 10px 0;
+        width: 100%;
+        /* Занимает всю ширину */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* Центрируем содержимое */
+    }
+
+    .density-slider-container-img {
+        margin-top: -40px;
+        margin-bottom: -100px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* Центрируем весь контейнер */
+        padding-right: 0;
+        /* Убираем лишний отступ */
+    }
+
+
+
     .dimension-label {
         font-size: 18px;
         line-height: 22px;
@@ -505,7 +559,7 @@
     .green-field {
         flex: 1 1 600px;
         max-width: 350px;
-        max-height: 400px;
+        max-height: 300px;
     }
 
     .size-input {
@@ -516,10 +570,10 @@
 
     .create-pixel-button,
     .delete-button-img {
-        width: 160px;
+        width: 120px;
         height: 50px;
-        font-size: 16px;
-        line-height: 20px;
+        font-size: 12px;
+        line-height: 15px;
     }
 
     .colors-container-img {
@@ -537,7 +591,7 @@
         position: relative;
         overflow: visible;
         min-width: 350px;
-        max-height: 200px;
+        max-height: 80px;
         min-height: 150px;
         padding-left: 15px;
         flex-wrap: wrap;
@@ -562,6 +616,7 @@
     .buttons-container-img {
         margin: 20px 0;
     }
+
 
     .density-slider-vertical-img {
         -webkit-appearance: none;
@@ -608,8 +663,15 @@
     }
 
     .density-slider-container-img {
-
+        margin-top: -40px;
         margin-bottom: -100px;
+    }
+
+    .density-value-img {
+        font-size: 12px;
+        font-family: 'Roboto Condensed', sans-serif;
+        font-weight: bold;
+        margin-top: 10px;
     }
 
 
