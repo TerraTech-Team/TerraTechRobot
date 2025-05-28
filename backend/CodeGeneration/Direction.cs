@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CodeGeneration
+﻿namespace CodeGeneration
 {
     public enum Direction
     {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Device.Gpio;
+﻿using System.Device.Gpio;
 using System.Threading;
 
 namespace CodeGeneration

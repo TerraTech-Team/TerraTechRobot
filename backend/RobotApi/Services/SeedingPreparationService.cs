@@ -1,6 +1,6 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using RobotApi.Models;
+using CodeGeneration;
 
 namespace RobotApi.Services
 {
