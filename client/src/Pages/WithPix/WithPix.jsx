@@ -177,7 +177,7 @@ const WithPix = () => {
 
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'robot_code.bin';
+            a.download = 'robot_code.zip';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
