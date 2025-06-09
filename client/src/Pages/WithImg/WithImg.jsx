@@ -42,7 +42,7 @@ const WithImg = () => {
             formData.append('image', imageFile);
             formData.append('Quality', density.toString());
 
-            const response = await fetch("https://arseniy1206-backend-host-5e47.twc1.net/api/image/process", {
+            const response = await fetch("https://virtical-terratechrobot-backend-5fee.twc1.net/api/image/process", {
                 method: 'POST',
                 body: formData
             });
