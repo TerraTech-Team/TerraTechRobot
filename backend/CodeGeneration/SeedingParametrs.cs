@@ -9,7 +9,9 @@ namespace CodeGeneration
 
         public int PixelsX { get; set; }
         public int PixelsY { get; set; }
-        public float StepX => AreaWidthCm / PixelsX;
-        public float StepY => AreaHeightCm / PixelsY;
+
+        private const int motorStepsInCm = 800; // этот параметр меняется эмпирически в зависимости от моторчика
+        public float StepX => AreaWidthCm / PixelsX * motorStepsInCm;
+        public float StepY => AreaHeightCm / PixelsY * motorStepsInCm;
     }
 }
