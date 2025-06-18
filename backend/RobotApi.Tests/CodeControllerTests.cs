@@ -26,13 +26,9 @@ public class CodeControllerTests
     }
 
     [Test]
-    public async Task GenerateCodeReturnsBinaryFileWhenValidRequest()
+    public async Task GenerateCodeReturnsZipFileWhenValidRequest()
     {
         var path = Path.Combine(Directory.GetCurrentDirectory(), "../../../TestAssets/sample.png");
-        var binPath = Path.Combine(Directory.GetCurrentDirectory(), "Resourses/robot_code.bin");
-
-        Directory.CreateDirectory(Path.GetDirectoryName(binPath)!);
-        await File.WriteAllBytesAsync(binPath, new byte[] { 0x01, 0x02, 0x03 });
 
         using var imageStream = File.OpenRead(path);
         using var content = new MultipartFormDataContent();
@@ -42,15 +38,16 @@ public class CodeControllerTests
             Headers = { ContentType = new MediaTypeHeaderValue("image/png") }
         }, "image", "sample.png");
 
-        content.Add(new StringContent("100"), "length");
-        content.Add(new StringContent("100"), "width");
+        content.Add(new StringContent("2000"), "length");
+        content.Add(new StringContent("2000"), "width");
 
         var response = await client.PostAsync("/api/code/generate", content);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        Assert.That(response.Content.Headers.ContentType?.MediaType, Is.EqualTo("application/octet-stream"));
-        Assert.That(response.Content.Headers.ContentDisposition?.FileName, Is.EqualTo("robot_code.bin"));
+        Assert.That(response.Content.Headers.ContentType?.MediaType, Is.EqualTo("application/zip"));
+        Assert.That(response.Content.Headers.ContentDisposition?.FileName, Is.EqualTo("CodeGeneration.zip"));
     }
+
 
     [Test]
     public async Task GenerateCodeReturnsBadRequestWhenImageIsMissing()
@@ -119,32 +116,7 @@ public class CodeControllerTests
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
-    
-    [Test]
-    public async Task GenerateCodeReturnsInternalServerErrorWhenFileMissing()
-    {
-        var binPath = Path.Combine(Directory.GetCurrentDirectory(), "Resourses/robot_code.bin");
-        
-        if (File.Exists(binPath))
-            File.Delete(binPath);
-
-        var path = Path.Combine(Directory.GetCurrentDirectory(), "../../../TestAssets/sample.png");
-
-        using var imageStream = File.OpenRead(path);
-        using var content = new MultipartFormDataContent();
-
-        content.Add(new StreamContent(imageStream)
-        {
-            Headers = { ContentType = new MediaTypeHeaderValue("image/png") }
-        }, "image", "sample.png");
-
-        content.Add(new StringContent("100"), "length");
-        content.Add(new StringContent("100"), "width");
-
-        var response = await client.PostAsync("/api/code/generate", content);
-
-        Assert.That((int)response.StatusCode, Is.EqualTo(500));
-    }
+   
 
     private static bool ValidateModel(CodeGenerateRequest model, out List<ValidationResult> results)
     {
@@ -202,4 +174,28 @@ public class CodeControllerTests
         Assert.That(isValid, Is.False);
         Assert.That(results.Any(r => r.ErrorMessage!.Contains("Width must be between 1 and 10000.")), Is.True);
     }
+
+    [Test]
+    public async Task GenerateCodeReturnsUnprocessableWhenStepIsTooSmall()
+    {
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "../../../TestAssets/sample.png");
+
+        using var imageStream = File.OpenRead(path);
+        using var content = new MultipartFormDataContent();
+
+        content.Add(new StreamContent(imageStream)
+        {
+            Headers = { ContentType = new MediaTypeHeaderValue("image/png") }
+        }, "image", "sample.png");
+
+        content.Add(new StringContent("10"), "length");
+        content.Add(new StringContent("10"), "width");
+
+        var response = await client.PostAsync("/api/code/generate", content);
+
+        Assert.That((int)response.StatusCode, Is.EqualTo(422));
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.That(body, Does.Contain("Step size must be at least 1 cm"));
+    }
+
 }
