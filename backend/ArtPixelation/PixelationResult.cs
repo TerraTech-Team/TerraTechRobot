@@ -3,4 +3,4 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace ArtPixelisation;
 
-public record PixelationResult(Image<Rgba32> Image, IReadOnlyCollection<Rgba32> UsedColors);
+public record PixelationResult(Image<Rgba32> Image, IReadOnlyDictionary<Rgba32, int> UsedColorCounts);

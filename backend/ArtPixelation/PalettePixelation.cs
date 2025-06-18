@@ -11,32 +11,38 @@ public static class PalettePixelation
     public static PixelationResult Apply(List<Rgba32> palette, Image<Rgba32> original, int targetSize)
     {
         var downscaled = GridResizer.Resize(original, targetSize);
-        var usedColors = new HashSet<Rgba32>();
+        var colorCounts = new Dictionary<Rgba32, int>();
 
         Parallel.For(0, downscaled.Height,
-            () => new HashSet<Rgba32>(),
-            (y, _, localSet) =>
+            () => new Dictionary<Rgba32, int>(),
+            (y, _, localDict) =>
             {
                 var row = downscaled.DangerousGetPixelRowMemory(y).Span;
                 for (var x = 0; x < downscaled.Width; x++)
                 {
                     var nearest = FindNearestColor(palette, row[x]);
                     row[x] = nearest;
-                    localSet.Add(nearest);
+
+                    if (!localDict.TryAdd(nearest, 1))
+                        localDict[nearest]++;
                 }
-                return localSet;
+                return localDict;
             },
-            localSet =>
+            localDict =>
             {
-                lock (usedColors)
+                lock (colorCounts)
                 {
-                    foreach (var color in localSet)
-                        usedColors.Add(color);
+                    foreach (var kvp in localDict)
+                    {
+                        if (!colorCounts.TryAdd(kvp.Key, kvp.Value))
+                            colorCounts[kvp.Key] += kvp.Value;
+                    }
                 }
             });
 
-        return new PixelationResult(downscaled, usedColors.ToList());
+        return new PixelationResult(downscaled, colorCounts);
     }
+
 
 
     private static Rgba32 FindNearestColor(List<Rgba32> palette, Rgba32 color)

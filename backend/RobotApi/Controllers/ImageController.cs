@@ -41,7 +41,7 @@ public class ImageController : ControllerBase
             await result.Image.SaveAsPngAsync(outputStream);
             outputStream.Position = 0;
             
-            AppendColorsToHeaders(result.UsedColors);
+            AppendColorsToHeaders(result.UsedColorCounts);
 
             return File(outputStream.ToArray(), "image/png", "processed.png");
         }
@@ -82,16 +82,19 @@ public class ImageController : ControllerBase
         errorResult = null;
         return true;
     }
-    
-    private void AppendColorsToHeaders(IEnumerable<Rgba32> colors)
+
+    private void AppendColorsToHeaders(IReadOnlyDictionary<Rgba32, int> colorCounts)
     {
-        var i = 1;
-        foreach (var c in colors)
+        int i = 1;
+        foreach (var kvp in colorCounts)
         {
-            Response.Headers.Append($"Color-{i++}", $"{c.R},{c.G},{c.B}");
+            var color = kvp.Key;
+            var count = kvp.Value;
+            Response.Headers.Append($"Color-{i++}", $"{color.R},{color.G},{color.B} {count}");
         }
     }
-    
+
+
     private static IActionResult BadRequest(string message) => new BadRequestObjectResult(new
     {
         error = "Bad Request",
