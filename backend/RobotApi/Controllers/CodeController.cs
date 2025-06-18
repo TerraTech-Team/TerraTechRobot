@@ -41,6 +41,11 @@ public class CodeController : ControllerBase
             };
             var (preparedParams, colorMap) = await prepService.PrepareAsync(memoryStream, parameters);
 
+            if (preparedParams.StepX < 1.0f || preparedParams.StepY < 1.0f)
+            {
+                return Unprocessable("The resolution is too high for the given bed size. Step size must be at least 1 cm.");
+            }
+
             var generationRoot = Path.GetFullPath(Path.Combine(backendRootPath, "CodeGeneration"));
             injectionService.GenerateFirmwareDataFile(colorMap, preparedParams, generationRoot);
 
