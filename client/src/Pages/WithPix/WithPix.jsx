@@ -27,7 +27,6 @@ const WithPix = () => {
     const [imageLoaded, setImageLoaded] = useState(false);
     const [serverError, setServerError] = useState(null);
 
-
     const parseColorsFromHeaders = (headers) => {
         const colors = [];
         const headersMap = new Map(headers);
@@ -38,11 +37,15 @@ const WithPix = () => {
                 .find(([key]) => key.toLowerCase() === headerName.toLowerCase());
 
             if (foundHeader) {
-                const rgbValue = foundHeader[1];
+                const parts = foundHeader[1].trim().split(/\s+/);
+                const rgbValue = parts[0];
+                const pixelCount = parts.length > 1 ? parseInt(parts[1]) : 0;
+
                 colors.push({
                     id: i,
                     name: headerName,
                     rgb: rgbValue.trim(),
+                    pixelCount: pixelCount,
                     cssValue: `rgb(${rgbValue.trim()})`
                 });
             }
@@ -50,6 +53,7 @@ const WithPix = () => {
 
         return colors.sort((a, b) => a.id - b.id);
     };
+
     useEffect(() => {
         console.log('Initial colors:', initialColors);
         console.log('Response headers:', responseHeaders);
@@ -67,7 +71,6 @@ const WithPix = () => {
         navigate('/WithoutImg');
     };
 
-
     const handleReprocess = async () => {
         if (!originalImageFile) return;
 
@@ -79,7 +82,7 @@ const WithPix = () => {
             formData.append('image', originalImageFile);
             formData.append('Quality', density.toString());
 
-            const response = await fetch("https://virtical-terratechrobot-backend-5fee.twc1.net/api/image/process", {
+            const response = await fetch("https://virtical-terratechrobot-backend-37e2.twc1.net/api/image/process", {
                 method: 'POST',
                 body: formData,
                 mode: 'cors'
@@ -134,7 +137,8 @@ const WithPix = () => {
                         originalImageUrl,
                         originalImageFile,
                         density,
-                        colors
+                        colors,
+                        responseHeaders: Array.from(response.headers.entries())
                     },
                     replace: true
                 });
@@ -165,7 +169,7 @@ const WithPix = () => {
             formData.append('Length', length.toString());
             formData.append('Width', width.toString());
 
-            const response = await fetch("https://virtical-terratechrobot-backend-5fee.twc1.net/api/code/generate", {
+            const response = await fetch("https://virtical-terratechrobot-backend-37e2.twc1.net/api/code/generate", {
                 method: 'POST',
                 body: formData
             });
@@ -190,9 +194,21 @@ const WithPix = () => {
         }
     };
 
+    const rgbToHex = (rgb) => {
+        if (!rgb) return '';
+        const parts = rgb.split(',').map(part => parseInt(part.trim()));
+        if (parts.length !== 3) return '';
+
+        const toHex = (num) => {
+            const hex = num.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        };
+
+        return `#${toHex(parts[0])}${toHex(parts[1])}${toHex(parts[2])}`.toUpperCase();
+    };
+
     return (
         <div className="settings-container">
-            {/* Блок для отображения ошибок сервера */}
             {serverError && (
                 <div className="server-error-message">
                     <div className="error-header">
@@ -210,7 +226,6 @@ const WithPix = () => {
                 </div>
             )}
 
-            {/* Блок для других ошибок */}
             {error && (
                 <div className="error-message">
                     <p>{error}</p>
@@ -218,7 +233,6 @@ const WithPix = () => {
                 </div>
             )}
 
-            {/* Кнопка скачивания */}
             <button
                 className="download-button"
                 onClick={handleDownloadCode}
@@ -227,15 +241,6 @@ const WithPix = () => {
                 {isDownloading ? 'Скачивание...' : 'Скачать программу'}
             </button>
 
-            {/* Сообщение об ошибке */}
-            {error && (
-                <div className="error-message">
-                    {error}
-                    <button onClick={() => setError(null)}>Закрыть</button>
-                </div>
-            )}
-
-            {/* Поля длины и ширины */}
             <div className="dimensions-container">
                 <div className="dimension-input">
                     <label className="dimension-label">Длина</label>
@@ -260,7 +265,6 @@ const WithPix = () => {
             </div>
 
             <div className="main-content">
-                {/* Ползунок плотности */}
                 <div className="density-slider-container-img">
                     <label className="input-label-img">Плотность <br />посева</label>
                     <div className="slider-wrapper-img">
@@ -272,13 +276,11 @@ const WithPix = () => {
                             min="16"
                             max="128"
                             step="1"
-
                         />
                         <span className="density-value-img">{density}</span>
                     </div>
                 </div>
 
-                {/* Блок с изображением */}
                 <div className="green-field-pix">
                     {processedImageUrl ? (
                         <img
@@ -295,30 +297,16 @@ const WithPix = () => {
                     {!imageLoaded && processedImageUrl && (
                         <div className="image-loading">Загрузка изображения...</div>
                     )}
-
                 </div>
 
-                {/* Палитра цветов */}
                 <div className="colors-container-img">
                     <div className="color-palette-img">
                         <label className="color-label">Цвета <br />изображения</label>
                         {serverColors.length > 0 ? (
                             <div className="color-grid">
                                 {serverColors.map((color) => {
-                                    const rgbToHex = (rgb) => {
-                                        if (!rgb) return '';
-                                        const parts = rgb.split(',').map(part => parseInt(part.trim()));
-                                        if (parts.length !== 3) return '';
-
-                                        const toHex = (num) => {
-                                            const hex = num.toString(16);
-                                            return hex.length === 1 ? '0' + hex : hex;
-                                        };
-
-                                        return `#${toHex(parts[0])}${toHex(parts[1])}${toHex(parts[2])}`.toUpperCase();
-                                    };
-
                                     const hexColor = rgbToHex(color.rgb);
+                                    const pixelCount = color.pixelCount || 0;
 
                                     return (
                                         <div
@@ -328,6 +316,8 @@ const WithPix = () => {
                                         >
                                             <span className="color-tooltip">
                                                 {color.name.replace('color-', 'Цвет ')}: {hexColor}
+                                                <br />
+                                                Семян: {pixelCount.toLocaleString()}
                                             </span>
                                         </div>
                                     );
@@ -342,7 +332,6 @@ const WithPix = () => {
                 </div>
             </div>
 
-            {/* Кнопки управления */}
             <div className="buttons-container-img">
                 <button
                     className="reprogress-pixel-button"

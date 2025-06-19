@@ -114,6 +114,7 @@
 .green-field-pix img {
     min-width: 490px;
     min-height: 490px;
+    max-height: 490px;
     object-fit: contain;
     image-rendering: pixelated;
 }
@@ -225,7 +226,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
     gap: 15px;
-    padding: 10px;
+    padding: 5px;
 }
 
 .color-item {
@@ -253,7 +254,7 @@
     color: white;
     padding: 5px 10px;
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 20px;
     white-space: nowrap;
     opacity: 0;
     visibility: hidden;
