@@ -10,7 +10,7 @@ The process is simple and user-friendly:
 Whether you want to decorate a park, garden, or create a floral logo — TerraTechRobot makes it real.
 
 ___
-## You can visit our web-app by link: https://virtical-terratechrobot-frontend-a004.twc1.net/
+## You can visit our web-app by link: https://virtical-terratechrobot-frontend-69c2.twc1.net/
 ## Tools
 
 * [ASP .NET Core](https://dotnet.microsoft.com/en-us/apps/aspnet)
